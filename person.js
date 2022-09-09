@@ -47,7 +47,7 @@ var User = /** @class */ (function () {
         return this.profile_photo ? this.profile_photo : "https://media.istockphoto.com/vectors/user-icon-flat-isolated-on-white-background-user-symbol-vector-vector-id1300845620?k=20&m=1300845620&s=612x612&w=0&h=f4XTZDAv7NPuZbG0habSpU0sNgECM0X7nbKzTUta3n8=";
     };
     User.prototype.saveUser = function (user_id, first_name, last_name, email, profile_photo) {
-        var response = this.validateUser(user_id, first_name, last_name, email);
+        var response = this.validateUser(user_id, first_name, last_name, email, profile_photo);
         if (response.status === "success") {
             this.user_id = user_id;
             this.first_name = first_name;
@@ -57,8 +57,9 @@ var User = /** @class */ (function () {
         }
         return response;
     };
-    User.prototype.validateUser = function (user_id, first_name, last_name, email) {
+    User.prototype.validateUser = function (user_id, first_name, last_name, email, profile_photo) {
         var data = InitialValues;
+        console.log("validateField", this.validateField(email));
         var error = false;
         if (this.validateField(user_id)) {
             data = __assign(__assign({}, data), { user_id: "User Id is required" });
@@ -73,9 +74,29 @@ var User = /** @class */ (function () {
             error = true;
         }
         if (this.validateField(email)) {
-            data = __assign(__assign({}, data), { email: "Email is required" });
+            console.log("awais");
+            debugger;
+            var c = this.validateEmail(email);
+            var text = "Email is required";
+            data = __assign(__assign({}, data), { email: text });
             error = true;
         }
+        else {
+            if (!this.validateEmail(email)) {
+                var text = "Please enter valid email";
+                data = __assign(__assign({}, data), { email: text });
+                error = true;
+            }
+        }
+        if (!this.validateField(profile_photo)) {
+            var text = "";
+            if (!this.validateImageUrl(profile_photo)) {
+                text = "Image url invalid";
+                data = __assign(__assign({}, data), { profile_photo: text });
+                error = true;
+            }
+        }
+        console.log("TEST", data);
         var status = error ? "error" : "success";
         var message = error ? "" : "successfully created";
         return { data: data, status: status, message: message };
@@ -85,6 +106,14 @@ var User = /** @class */ (function () {
             return true;
         }
         return false;
+    };
+    User.prototype.validateEmail = function (email) {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    };
+    User.prototype.validateImageUrl = function (str) {
+        var flag = (str.toLowerCase().indexOf(".jpg") >= 0);
+        return flag;
     };
     return User;
 }());
@@ -120,3 +149,23 @@ var Student = /** @class */ (function (_super) {
     }
     return Student;
 }(User));
+var Message = /** @class */ (function () {
+    function Message() {
+    }
+    Message.prototype.getsenderName = function () {
+        return this.sender;
+    };
+    Message.prototype.getReceiverName = function () {
+        return this.receiver;
+    };
+    Message.prototype.getMessageType = function () {
+        return this.message_type;
+    };
+    Message.prototype.getMessageText = function () {
+        return this.message_text;
+    };
+    Message.prototype.getCreateionTime = function () {
+        return this.creation_time;
+    };
+    return Message;
+}());
